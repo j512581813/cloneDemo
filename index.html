@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="test">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div ng-view></div>
+
+<script src="./angular.min.js"></script>
+<script src="./angular-route.min.js"></script>
+<script>
+    var app = angular.module('test', ['ngRoute']);
+    var interval = null;
+    app.run(['$rootScope', '$interval', function($rootScope, $interval) {
+        $rootScope.$on('$routeChangeStart', function() {
+            console.log('interval is canceled');
+            $interval.cancel(interval);
+        });
+    }]);
+    app.config(function($routeProvider) {
+        $routeProvider
+                .when('/page1', {
+                    templateUrl: 'page1.html',
+                    controller: 'Page1Ctrl'
+                })
+                .when('/page2', {
+                    templateUrl: 'page2.html',
+                    controller: 'Page2Ctrl'
+                })
+                .otherwise({
+                    redirectTo: '/page1'
+                });
+    });
+
+    app.controller('Page1Ctrl', function ($scope, $interval) {
+        interval = $interval(function () {
+            $scope.date = new Date();
+            console.log("interval is running:", $scope.date);
+        }, 1000);
+    });
+    app.controller('Page2Ctrl', function ($scope, $interval) {
+
+    });
+</script>
+</body>
+</html>
